@@ -24,6 +24,12 @@
       </div>
 
     </div>
+    <div class="insertar">
+      <input type="text" v-model="insertar_name">
+      <input type="text" v-model="insertar_description">
+      <input type="text" v-model="insertar_price">
+      <button v-on:click="send">Publicar</button>
+    </div>
 
 
     </div>
@@ -35,13 +41,22 @@ export default {
   name: 'App',
   data(){
     return{
-      users:[]
+      users:[],
+      usuario:{
+        product_name:"prueba2",
+        description:"descripcion de prueba",
+        price:"$1.000.000"
+      },
+      insertar_price:"",
+      insertar_description:"",
+      insertar_name:""
 
     }
   },
   methods:{
     buscar:function(){
-
+      
+      
       this.$http.get('http://localhost:3000/users',{headers: {'Content-Type': 'application/json',"Access-Control-Allow-Origin":"*"}})
       .then(response=>{
          // get body data
@@ -53,6 +68,25 @@ export default {
          console.log('error cargando lista');
       })
 
+    },
+    send:function(){
+      let usuario=this.usuario
+      usuario.product_name=this.insertar_name
+      usuario.description=this.insertar_description
+      usuario.price="$"+this.insertar_price
+      console.log(usuario)
+      this.$http.post("http://localhost:3000/sendUser",usuario,{headers:{'Content-Type':'application/json',"Access-Control-Allow-Origin":"*"}}).
+        then(response=>{
+          this.users=response.body
+          console.log("users",this.users)
+          this.insertar_name=""
+          this.insertar_description=""
+          this.insertar_price=""
+          this.buscar()
+        }, response=>{
+         // error callback
+         console.log('error cargando lista');
+         })
     }
   }
 }
@@ -111,5 +145,10 @@ a{
   height: 30em;
   width: 80%;
   border: solid;
+}
+.insertar{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 </style>
